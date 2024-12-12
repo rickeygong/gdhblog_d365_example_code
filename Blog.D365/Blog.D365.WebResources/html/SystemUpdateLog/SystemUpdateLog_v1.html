@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link href="../css/element-plus.css" rel="stylesheet" />
+    <title>xxxxxx System update log</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .log-entry {
+            margin-bottom: 20px;
+        }
+        .system-section {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        .update-item {
+            margin-left: 20px;
+            margin-bottom: 10px;
+            list-style-type: decimal;
+        }
+        .update-item span {
+            font-weight: bold;
+        }
+        h3,
+        h4 {
+            margin: 3px;
+        }
+        .el-timeline-item__timestamp {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <el-header>
+                <h2 style="color: #409EFF; ">xxxxxx System update log</h2>
+            </el-header>
+            <el-main>
+                <el-timeline>
+                    <el-timeline-item v-for="log in fLogData" :key="log.log_id" :timestamp="log.date" placement="top" type="primary" hollow="true">
+                        <el-card shadow="hover" style="margin-bottom: 20px;">
+                            <div v-for="system in getSystems(log.details)" :key="system" class="system-section">
+                                <h4>{{ system }}</h4>
+                                <ul>
+                                    <li v-for="(detail, index) in getDetailsBySystem(log.details, system)" :key="index"
+                                        class="update-item">
+                                        <el-tag :type="getTagType(detail.updateType)">{{ detail.updateType}}</el-tag>&nbsp;&nbsp;{{ detail.content }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </el-card>
+                    </el-timeline-item>
+                </el-timeline>
+            </el-main>
+            <el-footer></el-footer>
+        </el-container>
+    </div>
+    <script src="../js/vue3.js"></script>
+    <script src="../js/element-plus.js"></script>
+    <script>
+        const App = {
+            data() {
+                return {
+                    Constants: {
+                        Entities: {
+                            log: "gdh_system_update_log",
+                            logCollection: "gdh_system_update_logs",
+                            logDetail: "gdh_system_update_log_detail",
+                            logDetailCollection: "gdh_system_update_log_details",
+                        },
+                        Fields: {
+                            // log entitie field
+                            log_UpdateDate: "gdh_date",
+                            log_Remark: "gdh_remark",
+                            log_id: "gdh_system_update_logid",
+
+                            // log detail entitie field
+                            logDetail_SystemModel: "gdh_systemtype",
+                            logDetail_UpdateType: "gdh_updatetype",
+                            logDetail_Content: "gdh_content",
+                            logDetail_RefLog: "gdh_system_update_log",
+
+                            // common statecode
+                            state: "statecode",
+                        },
+                        OptionSet: {
+                            stateOption: {
+                                Active: 0,
+                                InActive: 1
+                            }
+                        }
+                    },
+                    fLogData: [],
+                };
+            },
+            created() {
+                this.init();
+            },
+            methods: {
+                init() {
+                    let fetch = `
+                        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">
+                            <entity name="${this.Constants.Entities.log}">
+                                <attribute name="${this.Constants.Fields.log_id}" />
+                                <attribute name="${this.Constants.Fields.log_UpdateDate}" />
+                                <filter>
+                                    <condition attribute="${this.Constants.Fields.state}" operator="eq"
+                                    value="${this.Constants.OptionSet.stateOption.Active}" />
+                                </filter>
+                                <order attribute="${this.Constants.Fields.log_UpdateDate}" descending="true" />
+                                <link-entity name="${this.Constants.Entities.logDetail}" from="${this.Constants.Fields.logDetail_RefLog}"
+                                to="${this.Constants.Fields.log_id}" link-type="inner" alias="logDetail">
+                                    <attribute name="${this.Constants.Fields.logDetail_Content}" />
+                                    <attribute name="${this.Constants.Fields.logDetail_SystemModel}" />
+                                    <attribute name="${this.Constants.Fields.logDetail_UpdateType}" />
+                                    <filter>
+                                        <condition attribute="${this.Constants.Fields.state}" operator="eq"
+                                        value="${this.Constants.OptionSet.stateOption.Active}" />
+                                    </filter>
+                                    <order attribute="${this.Constants.Fields.logDetail_UpdateType}" descending="false" />
+                                    <order attribute="createdon" descending="true" />
+                                    </link-entity>
+                            </entity>
+                        </fetch>`;
+                    let results = this.RetrieveRecordsUsingFetchXml(this.Constants.Entities.logCollection, encodeURI(fetch));
+                    if (results && results.value && results.value.length > 0) {
+                        this.fLogData =
+                            results.value.reduce((acc, item) => {
+                                const existingLog = acc.find(log => log["log_id"] === item[this.Constants.Fields.log_id]);
+                                if (existingLog) {
+                                    existingLog.details.push({
+                                        systemModel: item[`logDetail.${this.Constants.Fields.logDetail_SystemModel}@OData.Community.Display.V1.FormattedValue`],
+                                        updateType: item[`logDetail.${this.Constants.Fields.logDetail_UpdateType}@OData.Community.Display.V1.FormattedValue`],
+                                        content: item[`logDetail.${this.Constants.Fields.logDetail_Content}`],
+                                    });
+                                } else {
+                                    acc.push({
+                                        log_id: item[this.Constants.Fields.log_id],
+                                        date: item[this.Constants.Fields.log_UpdateDate + "@OData.Community.Display.V1.FormattedValue"],
+                                        details: [
+                                            {
+                                                systemModel: item[`logDetail.${this.Constants.Fields.logDetail_SystemModel}@OData.Community.Display.V1.FormattedValue`],
+                                                updateType: item[`logDetail.${this.Constants.Fields.logDetail_UpdateType}@OData.Community.Display.V1.FormattedValue`],
+                                                content: item[`logDetail.${this.Constants.Fields.logDetail_Content}`],
+                                            },
+                                        ],
+                                    });
+                                }
+                                return acc;
+                            }, []);
+                    }
+                },
+                getSystems(details) {
+                    const systems = [];
+                    details.forEach(detail => {
+                        if (!systems.includes(detail.systemModel)) {
+                            systems.push(detail.systemModel);
+                        }
+                    });
+                    return systems;
+                },
+                getDetailsBySystem(details, system) {
+                    return details.filter(detail => detail.systemModel === system);
+                },
+                getTagType(updateType) {
+                    const typeMap = {
+                        '功能优化': 'primary',
+                        '新添功能': 'success',
+                        '数据更新': 'info',
+                        '权限调整': 'warning',
+                        '问题修复': 'danger',
+                        'funcOptimization': 'primary',
+                        'newFeature': 'success',
+                        'dataUpdate': 'info',
+                        'permAdjustment': 'warning',
+                        'issueFix': 'danger'
+                    };
+                    return typeMap[updateType] || 'info';
+                },
+                // ============================================
+                /** [Begin] CRM function */
+                // ============================================
+
+                /** Common method to retrive records in 'Sync' mode based on custom query. */
+                RetrieveRecordsUsingFetchXml(lEntityName, lFetchXml) {
+                    let lResponse = null;
+                    let lXMLHttpRequest = new XMLHttpRequest();
+                    lXMLHttpRequest.open("GET", this.GetClientUrl() + "/api/data/v9.2/" + lEntityName + "?fetchXml=" + lFetchXml, false);
+                    lXMLHttpRequest.setRequestHeader("OData-MaxVersion", "4.0");
+                    lXMLHttpRequest.setRequestHeader("OData-Version", "4.0");
+                    lXMLHttpRequest.setRequestHeader("Accept", "application/json");
+                    lXMLHttpRequest.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+                    lXMLHttpRequest.setRequestHeader("Prefer", "odata.include-annotations=\"*\"");
+                    lXMLHttpRequest.onreadystatechange = function () {
+                        if (this.readyState === 4 && this.status === 200) {
+                            lXMLHttpRequest.onreadystatechange = null;
+                            lResponse = JSON.parse(this.response);
+                        }
+                    };
+                    lXMLHttpRequest.send();
+                    return lResponse;
+                },
+                GetClientUrl() {
+                    let lGlobalContext = "";
+                    try {
+                        lGlobalContext = Xrm.Utility.getGlobalContext();
+                    }
+                    catch (e) {
+                        lGlobalContext = parent.Xrm.Utility.getGlobalContext();
+                    }
+                    if (lGlobalContext !== null) {
+                        return lGlobalContext.getClientUrl();
+                    }
+                    return null;
+                }
+
+                // ============================================
+                /** [End] CRM function */
+                // ============================================
+            }
+        };
+        const app = Vue.createApp(App);
+        app.use(ElementPlus);
+        app.mount("#app");
+    </script>
+</body>
+
+</html>
