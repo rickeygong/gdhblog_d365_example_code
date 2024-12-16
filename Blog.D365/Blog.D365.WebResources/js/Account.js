@@ -7,29 +7,11 @@ Gdh.D365.Account = (function () {
     'use strict';
     return {
         Constants: {
-            Entities: {
-
-            },
             Fields: {
                 AccountName: "name",
                 Phone: "telephone1",
                 Fax: "fax",
                 Website: "websiteurl",
-            },
-            OptionSet: {
-
-            },
-            Forms: {
-
-            },
-            Tabs: {
-
-            },
-            Message: {},
-            WebResources: {
-                Html: {
-
-                }
             },
             Reports: {
                 PrintAccountReport: "PrintAccount.rdl",
@@ -167,7 +149,9 @@ Gdh.D365.Account = (function () {
                     if (this.status === 200) {
                         lResponse = JSON.parse(this.response);
                     } else {
-                        Xrm.Navigation.openAlertDialog(this.statusText);
+                        Xrm.Navigation.openAlertDialog("An exception has occurred, please contact the system administrator.");
+                        console.log("Error:");
+                        console.log(this.statusText);
                     }
                 }
             };
@@ -192,7 +176,9 @@ Gdh.D365.Account = (function () {
                     if (this.status === 200) {
                         lResponse = JSON.parse(this.response);
                     } else {
-                        Xrm.Navigation.openAlertDialog(this.statusText);
+                        Xrm.Navigation.openAlertDialog("An exception has occurred, please contact the system administrator.");
+                        console.log("Error:");
+                        console.log(this.statusText);
                     }
                 }
             };
