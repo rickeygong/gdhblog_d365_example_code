@@ -23,6 +23,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Blog.D365.WebResources", "B
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "53723"
+		SlnRelativePath = "Blog.D365.WebResources\"
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject
