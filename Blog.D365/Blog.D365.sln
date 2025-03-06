@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.34407.143
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.D365.Plugins", "Blog.D365.Plugins\Blog.D365.Plugins.csproj", "{6C0A5D0A-D39F-4049-B362-0B24604F848C}"
 EndProject
@@ -28,6 +28,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Blog.D365.WebResources", "B
 	EndProjectSection
 EndProject
 Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "Blog.D365.Reports", "Blog.D365.Reports\Blog.D365.Reports.rptproj", "{E3C4A2A2-834A-493A-8582-B7D00129D671}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.D365.Conn.ConsoleApp", "Blog.D365.Conn.ConsoleApp\Blog.D365.Conn.ConsoleApp.csproj", "{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +58,12 @@ Global
 		{E3C4A2A2-834A-493A-8582-B7D00129D671}.Release|Any CPU.ActiveCfg = Release
 		{E3C4A2A2-834A-493A-8582-B7D00129D671}.Release|Any CPU.Build.0 = Release
 		{E3C4A2A2-834A-493A-8582-B7D00129D671}.Release|Any CPU.Deploy.0 = Release
+		{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
