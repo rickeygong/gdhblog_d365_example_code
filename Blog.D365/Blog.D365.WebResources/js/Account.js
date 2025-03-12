@@ -200,5 +200,29 @@ Gdh.D365.Account = (function () {
             }
             return lValue;
         },
+        /**
+         * App消息提醒
+         * @param {any} str_title
+         * @param {any} str_body
+         * @param {any} str_ownerId
+         * @param {any} int_IconType
+         * @param {any} int_ToastType
+         * @param {any} json_Data
+         */
+        CreateAppNotification: function (str_title, str_body, str_ownerId, int_IconType, int_ToastType, json_Data) {
+        let appNotificationRequest = {
+            title: str_title,
+            body: str_body,
+            'ownerid@odata.bind': '/systemusers(' + str_ownerId + ')',
+            icontype: int_IconType,
+            toasttype: int_ToastType,
+            data: json_Data,
+        };
+        Xrm.WebApi.createRecord('appnotification', appNotificationRequest)
+            .then((result) => {
+                console.log('notification registered with ID: ' + result.id);
+            })
+            .catch((ex) => console.error(`error message: ${ex.message}`));
+    }
     }
 })();
