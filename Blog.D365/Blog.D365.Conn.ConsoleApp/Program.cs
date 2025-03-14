@@ -1,5 +1,4 @@
-﻿using Microsoft.Crm.Sdk.Messages;
-using Microsoft.Xrm.Sdk;
+﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Tooling.Connector;
 using System;
 using System.Configuration;
@@ -10,48 +9,74 @@ namespace Blog.D365.Conn.ConsoleApp
     {
         static void Main(string[] args)
         {
-            //string connectionStr = ConfigurationManager.ConnectionStrings["Dev-Office365"].ConnectionString;
-            string connectionStr = ConfigurationManager.ConnectionStrings["Dev-ClientSecret"].ConnectionString;
+            string connectionStr = ConfigurationManager.ConnectionStrings["Dev-Office365"].ConnectionString;
             CrmServiceClient client = new CrmServiceClient(connectionStr);
             if (client.IsReady)
             {
-                IOrganizationService orgServiceorgService = client;
-                // 使用 WhoAmI 进行测试
-                WhoAmIResponse resTest = (WhoAmIResponse)orgServiceorgService.Execute(new WhoAmIRequest());
-                Console.Write($"UserId: {resTest.UserId}");
-                //ExampleCreateAppNotification(orgServiceorgService);
-                Console.Read();
+                IOrganizationService orgService = client;
+                NotificationService notificationService = new NotificationService(orgService);
+                notificationService.CreateAppNotification(
+                    "Client assignment reminders -- Form Console",
+                    new Guid("DDF2C431-A1DF-EE11-904D-0017FA06CFC8"),
+                    "Customer [**Bright Design Studio**] has been assigned to you, please contact the customer in time.",
+                    new OptionSetValue(100000001),
+                    new OptionSetValue(200000000),
+                    "?pagetype=entityrecord&etn=account&id=23956352-CEBA-EF11-B8E8-0017FA0527B1",
+                    "newWindow"
+                );
             }
             else
             {
                 throw new Exception(client.LastCrmError);
             }
         }
-        private static void ExampleCreateAppNotification(IOrganizationService orgServiceorgService)
+    }
+
+    public class NotificationService
+    {
+        private readonly IOrganizationService _orgService;
+
+        public NotificationService(IOrganizationService orgService)
         {
-            OrganizationRequest request = new OrganizationRequest()
+            _orgService = orgService;
+        }
+
+        public void CreateAppNotification(
+            string title, 
+            Guid recipientId, 
+            string body, 
+            OptionSetValue iconType, 
+            OptionSetValue toastType, 
+            string url, 
+            string navigationTarget, 
+            Entity overrideContent = null)
+        {
+            OrganizationRequest request = new OrganizationRequest
             {
                 RequestName = "SendAppNotification",
                 Parameters = new ParameterCollection
                 {
-                    ["Title"] = "(Form Console)Client assignment reminders",
-                    ["Recipient"] = new EntityReference("systemuser", new Guid("DDF2C431-A1DF-EE11-904D-0017FA06CFC8")),
-                    ["Body"] = "Customer [**Bright Design Studio**] has been assigned to you, please contact the customer in time.",
-                    ["IconType"] = new OptionSetValue(100000001),
-                    ["ToastType"] = new OptionSetValue(200000000),
-                    ["Actions"] = new Entity()
+                    ["Title"] = title,
+                    ["Recipient"] = new EntityReference("systemuser", recipientId),
+                    ["Body"] = body,
+                    ["IconType"] = iconType,
+                    ["ToastType"] = toastType,
+                    ["Actions"] = new Entity
                     {
                         Attributes = {
-                            ["actions"] = new EntityCollection() {
+                            ["actions"] = new EntityCollection
+                            {
                                 Entities = {
-                                    new Entity() {
+                                    new Entity
+                                    {
                                         Attributes = {
                                             ["title"] = "Open Account record",
-                                            ["data"] = new Entity() {
+                                            ["data"] = new Entity
+                                            {
                                                 Attributes = {
                                                     ["type"] = "url",
-                                                    ["url"] = "?pagetype=entityrecord&etn=account&id=23956352-CEBA-EF11-B8E8-0017FA0527B1",
-                                                    ["navigationTarget"] = "newWindow"
+                                                    ["url"] = url,
+                                                    ["navigationTarget"] = navigationTarget
                                                 }
                                             }
                                         }
@@ -59,10 +84,11 @@ namespace Blog.D365.Conn.ConsoleApp
                                 }
                             }
                         }
-                    }
+                    },
+                    ["OverrideContent"] = overrideContent,
                 }
             };
-            orgServiceorgService.Execute(request);
+            _orgService.Execute(request);
         }
     }
 }
