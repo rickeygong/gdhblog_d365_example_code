@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Account\AccountPostUpdate.cs" />
     <Compile Include="Account\GetAccountNameByGuidAction.cs" />
+    <Compile Include="Contact\ContactPostUpdatePlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
