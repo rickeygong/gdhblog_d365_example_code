@@ -31,6 +31,8 @@ Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "Blog.D365.Reports", "Blog.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.D365.Conn.ConsoleApp", "Blog.D365.Conn.ConsoleApp\Blog.D365.Conn.ConsoleApp.csproj", "{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.D365.Example.CreateCustomAction", "Blog.D365.Example.CreateCustomAction\Blog.D365.Example.CreateCustomAction.csproj", "{054E9D8A-5406-4839-9FD7-4F02E5BF3465}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,12 @@ Global
 		{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
 		{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F2C5866-DFAE-4A11-9D56-078AA2FBD864}.Release|Any CPU.Build.0 = Release|Any CPU
+		{054E9D8A-5406-4839-9FD7-4F02E5BF3465}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{054E9D8A-5406-4839-9FD7-4F02E5BF3465}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{054E9D8A-5406-4839-9FD7-4F02E5BF3465}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{054E9D8A-5406-4839-9FD7-4F02E5BF3465}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{054E9D8A-5406-4839-9FD7-4F02E5BF3465}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{054E9D8A-5406-4839-9FD7-4F02E5BF3465}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

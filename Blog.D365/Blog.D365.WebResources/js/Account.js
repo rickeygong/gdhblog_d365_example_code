@@ -1,7 +1,7 @@
 ﻿/**
- * Example code ...
+ * [Example Code]
+ * Account Entity JavaScript
  */
-
 'use strict';
 if (Gdh === undefined) { var Gdh = {}; }
 if (Gdh.D365 === undefined) { Gdh.D365 = {}; }
@@ -133,5 +133,69 @@ if (Gdh.D365.Account === undefined) { Gdh.D365.Account = {}; }
             operationType: 0,
             operationName: "SendAppNotification",
         }
+    };
+    this.ExampleRandomlyCreateContactAction = function () {
+        var inputActionParams = {
+            // 本次示例不需要传入参数
+        };
+        Xrm.Utility.showProgressIndicator();
+        setTimeout(function () {
+            let actionResult = this.ExecuteAction("gdh_ExampleRandomlyCreateContactAction", inputActionParams);
+            Xrm.Utility.closeProgressIndicator();
+            Xrm.Page.data.refresh();
+            for (let index = 0; index < window.parent.length; index++) {
+                if (window.parent[index] &&
+                    window.parent[index].Xrm &&
+                    window.parent[index].Xrm.Page &&
+                    window.parent[index].Xrm.Page.data &&
+                    window.parent[index].Xrm.Page.data.refresh) {
+                    window.parent[index].Xrm.Page.data.refresh();
+                    break;
+                }
+            }
+        }, 1000);
+    };
+    this.ExecuteAction = function (actionUrl, actionPara, admin) {
+        var lResponse = null;
+        var lXMLHttpRequest = new XMLHttpRequest();
+        lXMLHttpRequest.open("POST", encodeURI(this.GetClientUrl() + "/api/data/v9.2/" + actionUrl), false);
+        lXMLHttpRequest.setRequestHeader("Accept", "application/json");
+        lXMLHttpRequest.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+        lXMLHttpRequest.setRequestHeader("OData-MaxVersion", "4.0");
+        lXMLHttpRequest.setRequestHeader("OData-Version", "4.0");
+        if (admin) {
+            lXMLHttpRequest.setRequestHeader("MSCRMCallerID", "<Your SystemAdmin Id>");
+        }
+        if (this.IsNullOrUndefined(actionPara)) {
+            lXMLHttpRequest.send();
+        }
+        else {
+            lXMLHttpRequest.send(JSON.stringify(actionPara));
+        }
+        if (lXMLHttpRequest.status === 200) {
+            lResponse = JSON.parse(lXMLHttpRequest.responseText);
+        }
+        else if (lXMLHttpRequest.status === 400) {
+            lResponse = JSON.parse(lXMLHttpRequest.responseText);
+        }
+        else {
+            if (lXMLHttpRequest.statusText !== null && lXMLHttpRequest.statusText !== undefined && lXMLHttpRequest.statusText !== "") {
+                Xrm.Navigation.openAlertDialog(lXMLHttpRequest.statusText);
+            }
+        }
+        return lResponse;
+    };
+    this.GetClientUrl = function () {
+        var lGlobalContext = "";
+        try {
+            lGlobalContext = Xrm.Utility.getGlobalContext();
+        }
+        catch (e) {
+            lGlobalContext = parent.Xrm.Utility.getGlobalContext();
+        }
+        if (lGlobalContext !== null) {
+            return lGlobalContext.getClientUrl();
+        }
+        return null;
     };
 }).call(Gdh.D365.Account);

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# 正则表达式
+regex="^(Feat|Update|FixBug|Docs|Style|Refactor|Perfect|Test|Chore): .+"
+
+# 获取提交信息
+commit_message=$(cat "$1")
+
+# 检查提交信息是否符合正则表达式
+if ! [[ $commit_message =~ $regex ]]; then
+  echo "   ERROR: Commit message 格式不正确！"
+  echo "   请使用以下格式之一，并确保冒号后有描述内容："
+  echo "   Feat: 添加新功能"
+  echo "   Update: 修改现有功能"
+  echo "   FixBug: 修复 bug"
+  echo "   Docs: 更新文档"
+  echo "   Style: 修改代码格式"
+  echo "   Refactor: 代码重构"
+  echo "   Perfect: 完善功能"
+  echo "   Test: 添加测试"
+  echo "   Chore: 其他修改"
+  exit 1
+fi
