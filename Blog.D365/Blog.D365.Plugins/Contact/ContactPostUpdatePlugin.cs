@@ -1,6 +1,8 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using Microsoft.Crm.Sdk.Messages;
+using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
+using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
@@ -109,6 +111,18 @@ namespace Blog.D365.Plugins.Contact
             {
                 return option.Label.UserLocalizedLabel?.Label ?? $"(No label for {option.Value})";
             }
+        }
+        public static int GetCurrentUserLanguageCode(IOrganizationService service)
+        {
+            WhoAmIResponse whoAmI = (WhoAmIResponse)service.Execute(new WhoAmIRequest());
+            Guid userId = whoAmI.UserId;
+            QueryExpression query = new QueryExpression("usersettings");
+            query.Criteria.AddCondition(new ConditionExpression("systemuserid", ConditionOperator.Equal, userId));
+            query.ColumnSet.AddColumns("uilanguageid");
+            Entity result = service.RetrieveMultiple(query).Entities.FirstOrDefault();
+            return result != null && result.Attributes.Contains("uilanguageid")
+                ? (int)result["uilanguageid"]
+                : 1033;
         }
     }
 }
